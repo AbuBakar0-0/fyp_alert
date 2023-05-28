@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../helper/apiMethods.dart';
 import '../../widgets/appbars.dart';
 import '../../widgets/gaps.dart';
 import '../constants.dart';
@@ -15,18 +16,16 @@ class SelectFaculty extends StatefulWidget {
 
 class _SelectFacultyState extends State<SelectFaculty> {
   var isChecked = false;
+  var tList = [];
+  var facultyAll = [];
+  var faculty = [];
 
-  var names = [
-    'Rao Waseem',
-    'Azeem Mushtaq',
-    'Benish MUSTAFA',
-    'NAVEED ASHRAF',
-    'Waoar Qaisar',
-    'Tehmima Aizaz',
-    'Sanam Haq',
-    'Dr. Hassan',
-    'Aftab Bhuti'
-  ];
+  genList(snap) {
+    for (int i = 0; i < snap.length; i++) {
+      tList.add(false);
+    }
+    facultyAll = snap;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +48,24 @@ class _SelectFacultyState extends State<SelectFaculty> {
               onChanged: (newValue) {
                 setState(() {
                   isChecked = newValue!;
+                  if (isChecked) {
+                    for (int i = 0; i < facultyAll.length; i++) {
+                      faculty.add(facultyAll[i]['Emp_no']);
+                    }
+                    for (int i = 0; i < tList.length; i++) {
+                      tList[i] = true;
+                    }
+                    setState(() {});
+                  } else {
+                    faculty.clear();
+                    for (int i = 0; i < tList.length; i++) {
+                      tList[i] = false;
+                    }
+                  }
                 });
               },
               controlAffinity:
-              ListTileControlAffinity.leading, //  <-- leading Checkbox
+                  ListTileControlAffinity.leading, //  <-- leading Checkbox
             ),
             gap20(),
             const Text(
@@ -61,34 +74,53 @@ class _SelectFacultyState extends State<SelectFaculty> {
             ),
             gap20(),
             SizedBox(
-              height: Get.height/1.8,
-              width: Get.width,
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: names.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return CheckboxListTile(
-                    title: Text(names[index]),
-                    value: isChecked,
-                    onChanged: (newValue) {
-                      setState(() {
-                        isChecked = newValue!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity
-                        .leading, //  <-- leading Checkbox
-                  );
-                },
-              ),
-            ),
+                height: Get.height / 1.8,
+                width: Get.width,
+                child: FutureBuilder(
+                  future: getFaculty(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    try {
+                      var snap = snapshot.data;
+                      genList(snap);
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {}
+                      return ListView.builder(
+                        itemCount: snap.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return CheckboxListTile(
+                            title: Text(snap[index]['Emp_firstname'] +
+                                " " +
+                                snap[index]['Emp_middle'] +
+                                " " +
+                                snap[index]['Emp_lastname']),
+                            value: tList[index],
+                            onChanged: (newValue) {
+                              faculty.add(snap[index]['Emp_no']);
+                              setState(() {
+                                tList[index] = newValue!;
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                )),
             gap20(),
             GestureDetector(
               onTap: () {
-                Get.to(() => AddAlert());
+                Get.to(() => AddAlert.checkBoxes(fromCheckBoxes: faculty));
               },
               child: Container(
                 padding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                 decoration: BoxDecoration(
                   color: Constant.primaryColor,
                   borderRadius: BorderRadius.circular(5),

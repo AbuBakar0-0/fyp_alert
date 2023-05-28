@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_alert/screens/admin/adminGroups.dart';
 import 'package:fyp_alert/widgets/textfields.dart';
 import 'package:get/get.dart';
 
+import '../../helper/apiMethods.dart';
 import '../../widgets/appbars.dart';
 import '../../widgets/gaps.dart';
 import '../constants.dart';
@@ -15,6 +17,8 @@ class AddGroup extends StatefulWidget {
 
 class _AddGroupState extends State<AddGroup> {
   TextEditingController groupName = TextEditingController();
+  TextEditingController aridNo = TextEditingController();
+  var groupList=[];
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +38,15 @@ class _AddGroupState extends State<AddGroup> {
               gap20(),
               gap20(),
               groupTextField("Group Name", groupName, Icons.group),
-              groupTextField("Arid Number", groupName, Icons.group),
+              groupTextField("Arid Number", aridNo, Icons.group),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  groupList.add({"groupName":groupName.text,"regNo":aridNo.text});
+                  aridNo.text='';
+                  setState(() {
+
+                  });
+                },
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -53,6 +63,7 @@ class _AddGroupState extends State<AddGroup> {
               gap20(),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 5),
+                padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
                 height: 350,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -66,10 +77,19 @@ class _AddGroupState extends State<AddGroup> {
                     ),
                   ],
                 ),
+                child: ListView.builder(itemCount: groupList.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) {
+                      return Text(groupList[index]['regNo'].toString());
+                    }),
               ),
               gap20(),
               GestureDetector(
-                onTap: () {},
+                onTap: ()async {
+                  await addGroup(groupList);
+                  Get.to(()=>const AdminGroups());
+                },
                 child: Container(
                   padding:
                   const EdgeInsets.symmetric(vertical: 10, horizontal: 10),

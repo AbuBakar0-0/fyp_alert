@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_alert/screens/admin/addAlert.dart';
 import 'package:fyp_alert/screens/constants.dart';
 import 'package:fyp_alert/screens/student/alertDetail.dart';
 import 'package:fyp_alert/widgets/gaps.dart';
@@ -34,7 +35,7 @@ notificationCard(message,date,from) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(width: (Get.width/2)-30,child: Text("Date : $date" )),
-              SizedBox(width: (Get.width/2)-30,child: Text("From : $from")),
+              from!=''?SizedBox(width: (Get.width/2)-30,child: Text("From : $from")):Container(),
             ],
           ),
         ],
@@ -46,7 +47,7 @@ notificationCard(message,date,from) {
 groupCard(name){
   return GestureDetector(
     onTap: (){
-
+      Get.to(()=>AddAlert.groups(groupName: name));
     },
     child: Container(
       margin: const EdgeInsets.symmetric(vertical: 5),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_alert/helper/apiMethods.dart';
 import 'package:fyp_alert/screens/admin/addGroup.dart';
 import 'package:get/get.dart';
 
@@ -24,11 +25,39 @@ class _AdminGroupsState extends State<AdminGroups> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            groupCard("Group 1"),
-            groupCard("Group 2"),
-            groupCard("Group 3"),
-            groupCard("Group 4"),
+            FutureBuilder(
+              future: getGroups(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                try {
+                  var snap = snapshot.data;
 
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                        child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {}
+                  return ListView.builder(
+                    itemCount: snap.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) {
+                      return groupCard(snap[index].toString());
+                    },
+                  );
+                } catch (e) {
+                  return const Center(
+                    child: Text(
+                      "Connection Error...\nPlease check your Internet connection...",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                  );
+                }
+              },
+            )
           ],
         ),
       ),

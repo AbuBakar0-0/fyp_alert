@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:fyp_alert/helper/apiMethods.dart';
 import 'package:fyp_alert/screens/admin/selectDiscipline.dart';
 import 'package:fyp_alert/screens/admin/selectFaculty.dart';
 import 'package:fyp_alert/screens/constants.dart';
@@ -24,10 +25,13 @@ class _AdminAlertsState extends State<AdminAlerts> {
       children: [
         // FAB 1
         SpeedDialChild(
-            child: const Icon(Icons.add_alert,color: Colors.white,),
+            child: const Icon(
+              Icons.add_alert,
+              color: Colors.white,
+            ),
             backgroundColor: Constant.primaryColor,
             onTap: () {
-              Get.to(()=>const SelectFaculty());
+              Get.to(() => const SelectFaculty());
             },
             label: 'Faculty Alert',
             labelStyle: const TextStyle(
@@ -37,10 +41,10 @@ class _AdminAlertsState extends State<AdminAlerts> {
             labelBackgroundColor: Constant.primaryColor),
         // FAB 2
         SpeedDialChild(
-          child: const Icon(Icons.add_alert,color: Colors.white),
+          child: const Icon(Icons.add_alert, color: Colors.white),
           backgroundColor: Constant.primaryColor,
           onTap: () {
-            Get.to(()=>const SelectDiscipline());
+            Get.to(() => const SelectDiscipline());
           },
           label: 'Student Alert',
           labelStyle: const TextStyle(
@@ -58,22 +62,43 @@ class _AdminAlertsState extends State<AdminAlerts> {
           width: Get.width,
           height: Get.height,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              notificationCard(
-                  "BIIT will remain off. Classes will commence from Monday",
-                  "13-May-2023",
-                  "BIIT ADMIN"),
-              notificationCard(
-                  "BIIT will remain off. Classes will commence from Monday",
-                  "13-May-2023",
-                  "BIIT ADMIN"),
-              notificationCard(
-                  "BIIT will remain off. Classes will commence from Monday",
-                  "13-May-2023",
-                  "BIIT ADMIN"),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FutureBuilder(
+                  future: getAlerts(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    try {
+                      var snap = snapshot.data;
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return snap.length!=0?ListView.builder(
+                        itemCount: snap.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return notificationCard(snap[index]['msg'].toString(),
+                              snap[index]['date'].toString(), snap[index]['name'].toString());
+                        },
+                      ):const Center(child:  Text("No Current Alerts"));
+                    } catch (e) {
+                      return const Center(
+                        child: Text(
+                          "Connection Error...\nPlease check your Internet connection...",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                )
+              ],
+            ),
           ),
         ),
         floatingActionButton: getFAB());

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_alert/widgets/appbars.dart';
-import 'package:get/get.dart';
 
-import '../../widgets/cards.dart';
-import '../../widgets/gaps.dart';
 import 'adminAlerts.dart';
 import 'adminGroups.dart';
 
