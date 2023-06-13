@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_alert/screens/admin/adminGroups.dart';
+import 'package:fyp_alert/screens/admin/adminHome.dart';
 import 'package:fyp_alert/widgets/textfields.dart';
 import 'package:get/get.dart';
 
@@ -44,7 +45,6 @@ class _AddGroupState extends State<AddGroup> {
                   groupList.add({"groupName":groupName.text,"regNo":aridNo.text});
                   aridNo.text='';
                   setState(() {
-
                   });
                 },
                 child: Container(
@@ -88,7 +88,7 @@ class _AddGroupState extends State<AddGroup> {
               GestureDetector(
                 onTap: ()async {
                   await addGroup(groupList);
-                  Get.to(()=>const AdminGroups());
+                  Get.offAll(()=>const AdminHome());
                 },
                 child: Container(
                   padding:

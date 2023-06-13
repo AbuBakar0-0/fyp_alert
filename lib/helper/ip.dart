@@ -1,1 +1,1 @@
-var ip = 'http://192.168.0.102/fmsAlertapi/api/fms';
+var ip = 'http://192.168.100.184/fmsAlertapi/api/fms';

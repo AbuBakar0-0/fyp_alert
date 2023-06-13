@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_alert/screens/admin/alertHistory.dart';
 import 'package:get/get.dart';
 
 import '../screens/auth/login.dart';
@@ -30,7 +31,6 @@ AppBar simpleAppbar() {
   );
 }
 
-
 AppBar adminTab() {
   return AppBar(
     iconTheme: IconThemeData(color: Constant.primaryColor),
@@ -41,6 +41,18 @@ AppBar adminTab() {
     ),
     centerTitle: true,
     actions: [
+      Container(
+        margin: const EdgeInsets.fromLTRB(0, 0, 20, 0),
+        child: GestureDetector(
+          onTap: () {
+            Get.to(() => const AlertHistory());
+          },
+          child: Icon(
+            Icons.notifications_active_outlined,
+            color: Constant.primaryColor,
+          ),
+        ),
+      ),
       Container(
         margin: const EdgeInsets.fromLTRB(0, 0, 20, 0),
         child: GestureDetector(
@@ -58,16 +70,17 @@ AppBar adminTab() {
       indicatorColor: Constant.primaryColor,
       tabs: const [
         Tab(
-            icon: Text(
-              'Alerts',
-              style: TextStyle(color: Colors.black),
-            ),),
+          icon: Text(
+            'Alerts',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
         Tab(
-            icon: Text(
-              'Groups',
-              style: TextStyle(color: Colors.black),
-            ),),
-
+          icon: Text(
+            'Groups',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
       ],
     ),
   );

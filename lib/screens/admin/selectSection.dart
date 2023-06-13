@@ -22,6 +22,7 @@ class SelectSection extends StatefulWidget {
 class _SelectSectionState extends State<SelectSection> {
   var isChecked = false;
 
+  var sectionAll=[];
 
   var disciplineList=[];
   var sectionsList=[];
@@ -35,10 +36,10 @@ class _SelectSectionState extends State<SelectSection> {
     for(int i=0;i<snap.length;i++){
       sectionsList.add(false);
     }
+    sectionAll=snap;
   }
   @override
   Widget build(BuildContext context) {
-    print(widget.semesterList);
     return Scaffold(
       appBar: simpleAppbar(),
       body: Container(
@@ -59,11 +60,27 @@ class _SelectSectionState extends State<SelectSection> {
                 onChanged: (newValue) {
                   setState(() {
                     isChecked = newValue!;
-                    selectedSections.clear();
                     if (isChecked) {
-
-
+                      for(int i=0;i<sectionAll.length;i++){
+                        selectedSections.add(sectionAll[i]['DISCIPLINE']+'-'+sectionAll[i]['SemC']+'-'+sectionAll[i]['SECTION']);
+                      }
+                      for(int i=0;i<widget.semesterList.length;i++){
+                        disciplineList[i]=true;
+                      }
+                      for(int i=0;i<sectionsList.length;i++){
+                        sectionsList[i]=true;
+                      }
                     }
+                    else{
+                      selectedSections.clear();
+                      for(int i=0;i<widget.semesterList.length;i++){
+                        disciplineList[i]=false;
+                      }
+                      for(int i=0;i<sectionsList.length;i++){
+                        sectionsList[i]=false;
+                      }
+                    }
+                    print(selectedSections);
                   });
                 },
                 controlAffinity:
@@ -95,6 +112,22 @@ class _SelectSectionState extends State<SelectSection> {
                               onChanged: (newValue) {
                                 setState(() {
                                   disciplineList[index] = newValue!;
+                                  if (disciplineList[index]) {
+                                    for(int i=0;i<sectionAll.length;i++){
+                                       if(sectionAll[i]['DISCIPLINE']==widget.semesterList[index][0].toString()){
+                                         selectedSections.add(sectionAll[i]['DISCIPLINE']+'-'+sectionAll[i]['SemC']+'-'+sectionAll[i]['SECTION']);
+                                         sectionsList[i]=true;
+                                       }
+                                    }
+                                  }
+                                  else{
+                                    selectedSections..removeWhere((item) => item.toString().contains(widget.semesterList[index][0].toString()));
+                                    for(int i=0;i<sectionAll.length;i++){
+                                      if(sectionAll[i]['DISCIPLINE']==widget.semesterList[index][0].toString()){
+                                        sectionsList[i]=false;
+                                      }
+                                    }
+                                  }
                                 });
                               },
                               controlAffinity: ListTileControlAffinity
@@ -115,6 +148,11 @@ class _SelectSectionState extends State<SelectSection> {
                                       onChanged: (newValue) {
                                         setState(() {
                                           sectionsList[index2] = newValue!;
+                                          if(sectionsList[index2]){
+                                            selectedSections.add(snap[index2]['DISCIPLINE']+'-'+snap[index2]['SemC']+"-"+snap[index2]['SECTION']);
+                                          }else{
+                                            selectedSections.removeWhere((item) => item.toString().contains(snap[index2]['DISCIPLINE']+'-'+snap[index2]['SemC']+"-"+snap[index2]['SECTION']));
+                                          }
                                         });
                                       },
                                       controlAffinity:
@@ -144,7 +182,7 @@ class _SelectSectionState extends State<SelectSection> {
               gap20(),
               GestureDetector(
                 onTap: () {
-                  Get.to(()=>SelectStudent());
+                  Get.to(()=>SelectStudent.set(sectionList: selectedSections,));
                 },
                 child: Container(
                   padding:

@@ -65,10 +65,47 @@ getAlerts() async {
   return responseBody;
 }
 
+getSentAlerts() async {
+  String url = '$ip/getSentAlerts?id=${User.id}'.toString();
+  var result = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+  var responseBody = jsonDecode(result.body);
+  return responseBody;
+}
+
 
 getFaculty() async {
   String url = '$ip/getFaculty'.toString();
   var result = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+  var responseBody = jsonDecode(result.body);
+  return responseBody;
+}
+
+getStudents(sectionList) async {
+  String url = '$ip/getStudents'.toString();
+  final jsonBody = jsonEncode(sectionList);
+  var result = await http.post(Uri.parse(url), headers: {"Content-Type": "application/json"},body: jsonBody);
+  var responseBody = jsonDecode(result.body);
+  return responseBody;
+}
+
+deleteGroup(name) async {
+  String url = '$ip/deleteGroup?val=$name'.toString();
+  var result = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+  var responseBody = jsonDecode(result.body);
+  return responseBody;
+}
+
+deleteStudent(name,regno) async {
+  String url = '$ip/deleteStudent?name=$name&regno=$regno'.toString();
+  var result = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+  var responseBody = jsonDecode(result.body);
+  return responseBody;
+}
+
+updateAlert(id) async {
+  String url = '$ip/updateAlert'.toString();
+  final jsonBody = jsonEncode({"id":id.toString()});
+  var result = await http.post(Uri.parse(url), headers: {"Content-Type": "application/json"},body: jsonBody);
   var responseBody = jsonDecode(result.body);
   return responseBody;
 }

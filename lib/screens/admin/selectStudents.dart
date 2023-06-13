@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_alert/helper/apiMethods.dart';
 import 'package:get/get.dart';
 
 import '../../widgets/appbars.dart';
@@ -7,7 +8,11 @@ import '../constants.dart';
 import 'addAlert.dart';
 
 class SelectStudent extends StatefulWidget {
-  const SelectStudent({Key? key}) : super(key: key);
+  SelectStudent({Key? key}) : super(key: key);
+
+  var sectionList;
+
+  SelectStudent.set({this.sectionList});
 
   @override
   State<SelectStudent> createState() => _SelectStudentState();
@@ -16,17 +21,16 @@ class SelectStudent extends StatefulWidget {
 class _SelectStudentState extends State<SelectStudent> {
   var isChecked = false;
 
-  var names = [
-    'NOMAN AHMAD',
-    'RASHID',
-    'SAFEER',
-    'SAFI UCCAH',
-    'SAMUEL ANWAR',
-    'SAYED NAQI',
-    'SHABANA SADIQ',
-    'SHAHID NAWAZ',
-    'SHAHZAD'
-  ];
+  var studentList = [];
+  var studentAll=[];
+  var selectedStudents=[];
+
+  genList(snap) {
+    for (int i = 0; i < snap.length; i++) {
+      studentList.add(false);
+    }
+    studentAll = snap;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +53,18 @@ class _SelectStudentState extends State<SelectStudent> {
               onChanged: (newValue) {
                 setState(() {
                   isChecked = newValue!;
+                  if(isChecked){
+                    for(int i=0;i<studentAll.length;i++){
+                      studentList[i]=true;
+                      selectedStudents.add(studentAll[i]['Reg_No']);
+                    }
+                  }
+                  else{
+                    selectedStudents.clear();
+                    for(int i=0;i<studentAll.length;i++){
+                      studentList[i]=false;
+                    }
+                  }
                 });
               },
               controlAffinity:
@@ -61,30 +77,50 @@ class _SelectStudentState extends State<SelectStudent> {
             ),
             gap20(),
             SizedBox(
-              height: Get.height/1.8,
-              width: Get.width,
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: names.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return CheckboxListTile(
-                    title: Text(names[index]),
-                    value: isChecked,
-                    onChanged: (newValue) {
-                      setState(() {
-                        isChecked = newValue!;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity
-                        .leading, //  <-- leading Checkbox
-                  );
-                },
-              ),
-            ),
+                height: Get.height / 1.8,
+                width: Get.width,
+                child: FutureBuilder(
+                  future: getStudents(widget.sectionList),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    try {
+                      var snap = snapshot.data;
+                      genList(snap);
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {}
+                      return ListView.builder(
+                        itemCount: snap.length,
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return CheckboxListTile(
+                            title: Text(snap[index]['name'].toString()),
+                            value: studentList[index],
+                            onChanged: (newValue) {
+                              setState(() {
+                                studentList[index] = newValue!;
+                                if(studentList[index]){
+                                  selectedStudents.add(snap[index]['Reg_No'].toString());
+                                }else{
+                                  selectedStudents.removeWhere((item) => item.toString().contains(snap[index]['Reg_No'].toString()));
+                                }
+                              });
+                            },
+                            controlAffinity: ListTileControlAffinity.leading,
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      print(e);
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                )),
             gap20(),
             GestureDetector(
               onTap: () {
-                Get.to(() => AddAlert());
+                Get.to(() => AddAlert.checkBoxes(fromCheckBoxes: selectedStudents));
               },
               child: Container(
                 padding:
